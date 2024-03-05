@@ -45,7 +45,7 @@ else:
 selection = st.selectbox(label='Select metric' ,options=['Revenue', 'Number of purchases'])
 d_revenue = df.groupby(aggregation)['revenue_usd'].agg(['sum','count']).reset_index(drop=False).rename(columns={'sum': 'Revenue USD', 'count':'Number of purchases'})
 if selection =='Revenue':
-    st.subheader(f'IAPs gross Revenue USD ({"daily" if aggregation=="date" else 'monthly'})',divider='rainbow')
+    st.subheader(f'IAPs gross Revenue USD ({"daily" if aggregation=="date" else "monthly"})',divider='rainbow')
     fig = px.bar(d_revenue, x=aggregation, y = 'Revenue USD' )
     chart = st.plotly_chart(fig,theme='streamlit',use_container_width=True)
     
