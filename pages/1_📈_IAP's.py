@@ -58,7 +58,7 @@ csv = convert_df(d_revenue)
 st.download_button(
                 label="Download data",
                 data=csv,
-                file_name=f"iaps_revenue_{"daily" if aggregation=="date" else 'monthly'}.csv",
+                file_name=f"iaps_revenue_{"daily" if aggregation=="date" else "monthly"}.csv",
                 mime="text/csv"
             )
 
