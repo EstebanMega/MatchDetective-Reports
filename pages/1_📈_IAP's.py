@@ -50,7 +50,7 @@ if selection =='Revenue':
     chart = st.plotly_chart(fig,theme='streamlit',use_container_width=True)
     
 elif selection=='Number of purchases':
-    st.subheader(f'Number of purchases ({"daily" if aggregation=="date" else 'monthly'})',divider='rainbow')
+    st.subheader(f'Number of purchases ({"daily" if aggregation=="date" else "monthly"})',divider='rainbow')
     fig = px.bar(d_revenue, x=aggregation, y = 'Number of purchases' )
     chart = st.plotly_chart(fig,theme='streamlit',use_container_width=True)
     
