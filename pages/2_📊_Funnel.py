@@ -13,6 +13,13 @@ def main():
     max_users = df.users.max()
     df['Users Percentage %'] = df['users'].apply(lambda x: round(100* (x/max_users) ,2))
     df['Step'] = df.apply(lambda x: create_funnel_step(x),axis=1)
+    incent_data = df[df.event != "app:init:completed"]
+    max_incent = incent_data['incent_users'].max()
+    max_non_incent = incent_data['non_incent_users'].max()
+    incent_data['Incent Users Percentage %'] = df['incent_users'].apply(lambda x: round(100* (x/max_incent) ,2))
+    incent_data['Non Incent Users Percentage %'] = df['non_incent_users'].apply(lambda x: round(100* (x/max_non_incent) ,2))
+    incent_data['Step'] = df.apply(lambda x: create_funnel_step(x),axis=1)
+    
     st.title('Match Detective Funnel')
     st.markdown("""**Description:** 
                 The following report analizes the number of users who reach a certain step on the game. 
@@ -71,7 +78,38 @@ def main():
         data=csv,
         file_name="levels.csv",
         mime="text/csv"
+        )
+    
+    st.header('Levels Funnel incent vs non incent', divider='rainbow')
+    column1, column2= st.columns(2)
+    min_percentage = column1.number_input(label = "Min percentage", value=10)
+    events=column2.multiselect('Choose events', options=['level:started', 'level:completed'],default='level:started')
+    slider1,slider2 = st.slider('Choose levels', min_value=1,max_value=425, value=(1, 50))
+    incent = (incent_data
+              [['Step', 'level','event','Incent Users Percentage %', 'Non Incent Users Percentage %']]
+              .melt(id_vars=['Step', 'level','event'], 
+                    value_vars = ['Incent Users Percentage %', 'Non Incent Users Percentage %'])
+              )
+    incent =incent[(incent.level >= slider1) & 
+                 (incent.level <= slider2) &
+                 (incent['value']  >= min_percentage)]
+    incent = (
+        incent[incent
+                 .event.isin(events)]
+        .sort_values(['level','value'],ascending=[True,False])
+        )
+    
+    fig = px.funnel(data_frame=incent, x='value', y='Step', color='variable')
+    st.plotly_chart(fig,use_container_width=True)
+    
+    csv = convert_df(incent)
+    st.download_button(
+        label="Download data",
+        data=csv,
+        file_name="incent_levels.csv",
+        mime="text/csv"
         )    
+     
     
     if st.checkbox('Raw Data', value=False):
         st.header('Funnel Data', divider='rainbow')
